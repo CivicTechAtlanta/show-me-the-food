@@ -1,0 +1,42 @@
+Our data was sourced from many locations around the web,
+
+Strategic Community Investment (SCI) Report:
+  www.atlantaga.gov/index.aspx?page=1070
+  www.atlantaga.gov/index.aspx?page=908
+  
+  The following is a text copy of the website (page=1070):
+    The Strategic Community Investment (SCI) Report includes data from reliable sources such as the Atlanta Police Department, Fulton and DeKalb County Tax Office and other sources to help draw a picture of the neighborhood characteristics and opportunities.
+      The report was coordinated and compiled by APD Solutions, LLC for the City of Atlanta.
+    Below are links to the various types of raw data collected and used to complete the SCI Report.
+      Please see the Neighborhood Conditions Report and the SCI Report for a full description of the methodology used to compile and analyze the raw data below.
+    
+    The Atlanta SCI Dataset 2013 is the dataset used as the basis of the study. It includes 160,207 parcel records of which roughly 144,000 are residential.
+      The file is organized by parcel ID and contains parcel information from the 2010 Fulton County and 2009 DeKalb County tax digest, housing condition information, and limited real estate transaction data from MetroStudy.
+      Metrostudy data was used to source real estate transaction records for the neighborhood districts within the City of Atlanta.
+      For the purposes of the SCI Housing Study, Metrostudy was used primarily to identify distressed assets and as a value added supplement provided an account of electronic deed records for the last single transaction of record associated with a residential property.
+      The extent of the supplementary transaction data is city-wide and spanned a time period from 1901-2012 representing a comprehensive listing of foreclosures, new sales, REO Sales, and resales.
+      Given that the city has 143,888 residential properties, Metrostudy cites the following reasons for the current number of transactions available in electronic deed format (130,261) falling short of the current residential parcel count:
+        A) Deed records that are not available in an electronic format
+        B) Bulk property sales
+        C) Lot consolidations
+        D) Unrecorded property ownership transfers
+        E) Sales coding irregularities, etc.
+    For a full description of the methodology used to compile and analyze the raw data, please consult the SCI Report.
+    The Neighborhood Investment Typology Master List includes a listing of all neighborhoods by neighborhood investment typology and NPU.
+    The SCI Side-by-Side Raw Scores file spreadsheet contains raw numbers without calculations or formulas.
+      The Side-by-Side Typology lists the scores for each neighborhood investment typology against the City-wide average.
+    The Fulton-Dekalb Tax Digest Master File is the original parcel digest provided to the consultant as the basis of the study.
+      The City has added the information collected from the windshield survey (conducted December 2011-August 2012) and real estate transaction data collected from MetroStudy by the consultant.
+      Also included in the file are links to and descriptions of the Landuse codes and definitions used by Fulton County, DeKalb County, and the City of Atlanta.
+      [Disclaimer: The Fulton-Dekalb Tax Digest Master File as it is presented was not used in this study and is being provided as a complement for research purposes.]
+  Our use of this data:
+    We have filtered out residentail and vacant sites.
+  
+Snap Retailer Locator:
+  http://www.fns.usda.gov/snap/retailerlocator
+  
+  This is a consumer facing map to find a retailer nearby that welcomes SNAP EBT customers.
+  It also provides a nice data download
+  
+  Our use of this data:
+    We haven't integrated it yet.
