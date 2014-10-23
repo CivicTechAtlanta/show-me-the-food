@@ -36,7 +36,7 @@ Snap Retailer Locator:
   http://www.fns.usda.gov/snap/retailerlocator
   
   This is a consumer facing map to find a retailer nearby that welcomes SNAP EBT customers.
-  It also provides a nice data download
+  It also provides a useful data download for the entire state.
   
   Our use of this data:
     We haven't integrated it yet.
