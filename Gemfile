@@ -6,6 +6,7 @@ gem 'rails', '4.1.2'
 gem 'pg'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
+gem 'underscore-rails'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .js.coffee assets and views
@@ -36,6 +37,11 @@ gem 'spring',        group: :development
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
-gem 'pry', group: [:development, :test]
+group :development, :test do
+  gem 'rspec-rails', '~> 3.0.0'
+  gem 'pry', group: [:development, :test]
+  gem 'factory_girl_rails'
+end
 
 gem 'geocoder'
+gem 'gmaps4rails'
