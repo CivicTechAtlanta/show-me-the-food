@@ -1,0 +1,39 @@
+<div style='width: 800px;'>
+  <div id="map" style='width: 800px; height: 400px;'></div>
+</div>
+
+<script>
+    var handler = Gmaps.build('Google');
+    handler.buildMap({ internal: {id: 'map'} }, function(){
+        if(navigator.geolocation)
+            navigator.geolocation.getCurrentPosition(displayOnMap);
+    });
+    function displayOnMap(position){
+        var     lat         = position.coords.latitude,
+                lng         = position.coords.longitude,
+                my_location = handler.addMarker({
+                    lat: lat,
+                    lng: lng,
+                    picture: {
+                        url: "http://google.com/mapfiles/arrow.png",
+                        width: 36,
+                        height: 36
+                    },
+                    infowindow: "You are here"
+                });
+//
+        $.ajax({
+            url: "/locations/search",
+            type: "GET",
+            data: "&lat=" + lat + "&lng=" +lng,
+            success: function(data) {
+                var markers     = handler.addMarkers(data);
+                console.log(data);
+                handler.bounds.extendWith(markers);
+                handler.map.centerOn(my_location);
+                handler.fitMapToBounds();
+            }
+        });
+
+    }
+</script>

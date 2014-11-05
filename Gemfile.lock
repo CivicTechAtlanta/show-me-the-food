@@ -37,9 +37,16 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.8.0)
+    diff-lcs (1.2.5)
     erubis (2.7.0)
     execjs (2.2.2)
+    factory_girl (4.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (4.5.0)
+      factory_girl (~> 4.5.0)
+      railties (>= 3.0.0)
     geocoder (1.2.5)
+    gmaps4rails (2.1.2)
     hike (1.2.3)
     i18n (0.6.11)
     jbuilder (2.2.4)
@@ -81,6 +88,22 @@ GEM
     rake (10.3.2)
     rdoc (4.1.2)
       json (~> 1.4)
+    rspec-core (3.1.7)
+      rspec-support (~> 3.1.0)
+    rspec-expectations (3.1.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.1.0)
+    rspec-mocks (3.1.3)
+      rspec-support (~> 3.1.0)
+    rspec-rails (3.1.0)
+      actionpack (>= 3.0)
+      activesupport (>= 3.0)
+      railties (>= 3.0)
+      rspec-core (~> 3.1.0)
+      rspec-expectations (~> 3.1.0)
+      rspec-mocks (~> 3.1.0)
+      rspec-support (~> 3.1.0)
+    rspec-support (3.1.2)
     sass (3.2.19)
     sass-rails (4.0.4)
       railties (>= 4.0.0, < 5.0)
@@ -111,20 +134,25 @@ GEM
     uglifier (2.5.3)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    underscore-rails (1.7.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   coffee-rails
+  factory_girl_rails
   geocoder
+  gmaps4rails
   jbuilder
   jquery-rails
   pg
   pry
   rails (= 4.1.7)
+  rspec-rails
   sass-rails
   sdoc
   spring
   turbolinks
   uglifier
+  underscore-rails
