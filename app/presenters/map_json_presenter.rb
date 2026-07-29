@@ -1,9 +1,16 @@
+# Builds the marker hashes consumed by the Leaflet map
+# (app/javascript/controllers/map_controller.js).
 class MapJsonPresenter
-  def self.create_location_hash(items)
-    hash = Gmaps4rails.build_markers(items) do |item, marker|
-      marker.lat item.latitude.to_f
-      marker.lng item.longitude.to_f
+  def self.markers(locations)
+    locations.map do |location|
+      {
+        lat: location.latitude,
+        lng: location.longitude,
+        name: location.name,
+        address: location.address,
+        ebt: location.ebt,
+        source: location.source
+      }
     end
-    hash
   end
 end
