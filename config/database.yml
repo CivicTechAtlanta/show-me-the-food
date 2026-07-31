@@ -28,4 +28,5 @@ test:
 # ensure the database is located in a persisted volume.
 production:
   <<: *default
-  # database: path/to/persistent/storage/production.sqlite3
+  # On Fly.io, /rails/storage is a mounted volume (see fly.toml).
+  database: storage/production.sqlite3

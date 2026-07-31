@@ -1,0 +1,29 @@
+# syntax=docker/dockerfile:1
+
+# Development image used by compose.yaml (`docker compose up`). The production
+# image, used for Fly.io/Kamal deploys, is ./Dockerfile.
+
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
+ARG RUBY_VERSION=4.0.5
+FROM docker.io/library/ruby:$RUBY_VERSION-slim
+
+WORKDIR /rails
+
+# build-essential/libyaml-dev/pkg-config compile native gems, sqlite3 provides
+# the database CLI, git serves bundler, curl allows health checks.
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y build-essential curl git libyaml-dev pkg-config sqlite3 && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Gems live outside /rails so the host bind mount doesn't shadow them.
+ENV BUNDLE_PATH="/usr/local/bundle"
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
+EXPOSE 3000
+
+# `bundle check || bundle install` picks up Gemfile changes made on the host
+# since the image was built. db:prepare creates, migrates, and (on first
+# creation) seeds the database.
+CMD ["bash", "-c", "(bundle check || bundle install) && bin/rails db:prepare && exec bin/rails server -b 0.0.0.0"]
