@@ -1,9 +1,10 @@
 require "csv"
 
 # Seeds the locations table from the CSV snapshots in db/seed_data (sources
-# documented in Datasources.txt). Coordinates come straight from the CSVs
-# where available; run `bin/rails geocode:backfill` afterwards to geocode the
-# rest. Re-running replaces each source's rows wholesale.
+# documented in Datasources.txt and db/seed_data/README.md). Coordinates come
+# straight from the CSVs where available; run `bin/rails geocode:backfill`
+# afterwards to geocode the rest. Re-running replaces each source's rows
+# wholesale.
 
 def replace_source(source, rows)
   Location.where(source: source).delete_all
@@ -15,16 +16,17 @@ def blank_to_nil(value)
   value.to_s.strip.presence
 end
 
-# --- SNAP/EBT retailers (statewide, with coordinates) ---------------------
+# --- USDA SNAP retailers, Georgia (with coordinates) ----------------------
 
 ebt_file = Rails.root.join("db/seed_data/GA-EBT.csv")
-# Each row ends with a stray space after the final quoted field, which strict
-# CSV parsing rejects, so trim line endings before parsing.
-ebt_content = File.read(ebt_file).gsub(/[ \t]+$/, "")
 
-ebt_rows = CSV.parse(ebt_content, headers: true).map do |row|
-  address = [ row["Address"], row["Address Line #2"], row["City"], row["State"], row["Zip5"] ]
-    .filter_map { |part| blank_to_nil(part) }.join(", ")
+ebt_rows = CSV.read(ebt_file, headers: true).map do |row|
+  address = [
+    row["Address"],
+    row["Address Line #2"],
+    row["City"],
+    "#{blank_to_nil(row['State'])} #{blank_to_nil(row['Zip5'])}"
+  ].filter_map { |part| blank_to_nil(part) }.join(", ")
 
   {
     name: row["Store_Name"],
@@ -44,8 +46,11 @@ replace_source(ebt_file.basename.to_s, ebt_rows)
 sci_file = Rails.root.join("db/seed_data/Atlanta_Strategic_Community_Investment_2013.csv")
 
 sci_rows = CSV.read(sci_file, headers: true).map do |row|
+  situs = blank_to_nil(row["SITUS"])
+
   {
-    address: row["SITUS"],
+    # City/state are appended so the bare parcel address geocodes unambiguously.
+    address: situs && "#{situs}, Atlanta, GA",
     land_use_description: row["LandUse_Description"],
     neighborhood_name: row["Neighborhood_Name"],
     sidewalks: blank_to_nil(row["Sidewalks"])&.casecmp?("yes"),
