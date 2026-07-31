@@ -27,6 +27,21 @@ grocery stores and healthy food providers to locate in "food deserts."
 
 ## Setup
 
+### With Docker (no Ruby install needed)
+
+```
+docker compose up
+```
+
+This builds the dev image, prepares and seeds the SQLite database, and serves
+the app at <http://localhost:3000>. The source tree is bind-mounted, so code
+edits reload live. The database lives in a named Docker volume; to reset it,
+run `docker compose down --volumes`.
+
+### Natively
+
+With Ruby installed (see `.ruby-version`):
+
 ```
 bin/setup
 ```
@@ -47,6 +62,23 @@ take about 4 minutes) with:
 ```
 bin/rails geocode:backfill
 ```
+
+## Deploying to Fly.io
+
+The production `Dockerfile` plus `fly.toml` deploy to [Fly.io](https://fly.io)
+with SQLite on a persistent volume. With [flyctl](https://fly.io/docs/flyctl/)
+installed and signed in:
+
+```
+fly launch --copy-config --no-deploy
+fly secrets set RAILS_MASTER_KEY=$(cat config/master.key)
+fly deploy --ha=false
+```
+
+`--ha=false` keeps the app to a single machine — required because SQLite lives
+on one volume. First boot creates, migrates, and seeds the database
+automatically; then optionally geocode the parcel data with
+`fly ssh console -C "bin/rails geocode:backfill"`.
 
 ## Tests and checks
 

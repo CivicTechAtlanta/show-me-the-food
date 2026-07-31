@@ -1,0 +1,41 @@
+# Fly.io deployment configuration — https://fly.io/docs/reference/configuration/
+#
+# First deploy (the app name below must be globally unique; `fly launch` lets
+# you pick another):
+#
+#   fly launch --copy-config --no-deploy
+#   fly secrets set RAILS_MASTER_KEY=$(cat config/master.key)
+#   fly deploy --ha=false
+#
+# --ha=false keeps it to a single machine: SQLite lives on the volume below,
+# so only one machine can safely run the app. The entrypoint runs db:prepare
+# on boot, which creates, migrates, and (on first creation) seeds the
+# database. After that, optionally: fly ssh console -C "bin/rails geocode:backfill"
+
+app = "show-me-the-food"
+primary_region = "atl"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[mounts]
+  source = "storage"
+  destination = "/rails/storage"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    timeout = "5s"
+    method = "GET"
+    path = "/up"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
