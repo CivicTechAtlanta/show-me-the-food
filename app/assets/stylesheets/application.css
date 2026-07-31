@@ -1,15 +1,52 @@
 /*
- * This is a manifest file that'll be compiled into application.css, which will include all the files
- * listed below.
- *
- * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
- * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
- *
- * You're free to add application-wide styles to this file and they'll appear at the bottom of the
- * compiled file so the styles you add here take precedence over styles defined in any styles
- * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
- * file per style scope.
- *
- *= require_tree .
- *= require_self
+ * With Propshaft, assets are served efficiently without preprocessing steps.
+ * Application-wide styles live here.
  */
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #fff;
+  color: #212529;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1a1b1e;
+    color: #e9ecef;
+  }
+}
+
+.site-header {
+  padding: 0.75rem 1rem;
+}
+
+.site-header h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+
+.site-header p {
+  margin: 0;
+  opacity: 0.75;
+}
+
+.legend {
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+}
+
+.legend--ebt {
+  background: #2f9e44;
+}
+
+.legend--sci {
+  background: #1971c2;
+}
+
+#map {
+  height: calc(100vh - 5.5rem);
+  min-height: 20rem;
+}

@@ -1,49 +1,72 @@
-# Seed db with City of Atlanta SCI 2013 parcels and current USDA SNAP retailers.
-# Not idempotent: running twice creates duplicate rows.
+require "csv"
 
-# --- Atlanta Strategic Community Investment 2013 (food-related parcels) ---
-# This file has no coordinates; rows geocode on save (see Location model).
-# City/state are appended so the bare parcel address geocodes unambiguously.
+# Seeds the locations table from the CSV snapshots in db/seed_data (sources
+# documented in Datasources.txt and db/seed_data/README.md). Coordinates come
+# straight from the CSVs where available; run `bin/rails geocode:backfill`
+# afterwards to geocode the rest. Re-running replaces each source's rows
+# wholesale.
 
-sci_file = File.join(Rails.root, "db", "seed_data", "Atlanta_Strategic_Community_Investment_2013.csv")
-
-sidewalks_to_boolean = lambda do |value|
-  case value.to_s.strip.upcase
-  when "YES" then true
-  when "NO" then false
-  end
+def replace_source(source, rows)
+  Location.where(source: source).delete_all
+  rows.each_slice(1000) { |slice| Location.insert_all(slice, record_timestamps: true) }
+  puts "Seeded #{rows.size} locations from #{source}"
 end
 
-CSV.parse(File.read(sci_file), headers: true, :encoding => 'UTF-8').each do |row|
-
-  Location.create! address: "#{row['SITUS']}, Atlanta, GA",
-                   land_use_description: row["LandUse_Description"],
-                   neighborhood_name: row["Neighborhood_Name"],
-                   sidewalks: sidewalks_to_boolean.call(row["Sidewalks"]),
-                   violations: row["Multiple_Violations"], lot_condition: row["Lot_Condition"],
-                   structure_condition: row["Structure_Condition"], digest_year: row["DIGEST"],
-                   owner: row["OWNER"], tax_district: row["TAX_DISTR"], objectid_1: row["OBJECTID_1"],
-                   objectid: row["OBJECTID"], val_acres: row["VAL_ACRES"], structure_year: row["STRUCT_YR"],
-                   source: "Atlanta_Strategic_Community_Investment_2013.csv"
-
+def blank_to_nil(value)
+  value.to_s.strip.presence
 end
 
-# --- USDA SNAP retailers, Georgia (GA-EBT.csv) ---
-# Coordinates come straight from the CSV, so these rows skip geocoding.
+# --- USDA SNAP retailers, Georgia (with coordinates) ----------------------
 
-ebt_file = File.join(Rails.root, "db", "seed_data", "GA-EBT.csv")
+ebt_file = Rails.root.join("db/seed_data/GA-EBT.csv")
 
-CSV.parse(File.read(ebt_file), headers: true, :encoding => 'UTF-8').each do |row|
+ebt_rows = CSV.read(ebt_file, headers: true).map do |row|
+  address = [
+    row["Address"],
+    row["Address Line #2"],
+    row["City"],
+    "#{blank_to_nil(row['State'])} #{blank_to_nil(row['Zip5'])}"
+  ].filter_map { |part| blank_to_nil(part) }.join(", ")
 
-  address_parts = [row["Address"], row["Address Line #2"], row["City"], "GA #{row['Zip5']}"]
-  address = address_parts.reject { |part| part.nil? || part.strip.empty? }.join(", ")
-
-  Location.create! name: row["Store_Name"],
-                   address: address,
-                   county: row["County"],
-                   ebt: true,
-                   latitude: row["Latitude"].to_f,
-                   longitude: row["Longitude"].to_f,
-                   source: "GA-EBT.csv"
-
+  {
+    name: row["Store_Name"],
+    latitude: blank_to_nil(row["Latitude"])&.to_f,
+    longitude: blank_to_nil(row["Longitude"])&.to_f,
+    address: address,
+    county: row["County"],
+    ebt: true,
+    source: ebt_file.basename.to_s
+  }
 end
+
+replace_source(ebt_file.basename.to_s, ebt_rows)
+
+# --- Atlanta Strategic Community Investment parcels (no coordinates) ------
+
+sci_file = Rails.root.join("db/seed_data/Atlanta_Strategic_Community_Investment_2013.csv")
+
+sci_rows = CSV.read(sci_file, headers: true).map do |row|
+  situs = blank_to_nil(row["SITUS"])
+
+  {
+    # City/state are appended so the bare parcel address geocodes unambiguously.
+    address: situs && "#{situs}, Atlanta, GA",
+    land_use_description: row["LandUse_Description"],
+    neighborhood_name: row["Neighborhood_Name"],
+    sidewalks: blank_to_nil(row["Sidewalks"])&.casecmp?("yes"),
+    violations: blank_to_nil(row["Multiple_Violations"]),
+    lot_condition: blank_to_nil(row["Lot_Condition"]),
+    structure_condition: blank_to_nil(row["Structure_Condition"]),
+    digest_year: row["DIGEST"],
+    owner: row["OWNER"],
+    tax_district: row["TAX_DISTR"],
+    objectid_1: row["OBJECTID_1"],
+    objectid: row["OBJECTID"],
+    val_acres: row["VAL_ACRES"],
+    structure_year: row["STRUCT_YR"],
+    ebt: false,
+    source: sci_file.basename.to_s
+  }
+end
+
+replace_source(sci_file.basename.to_s, sci_rows)
